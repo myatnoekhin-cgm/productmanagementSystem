@@ -9,7 +9,8 @@ import com.example.productmanagement.system.persistence.entity.Book;
 import com.example.productmanagement.system.web.form.BookForm;
 
 public interface BookService {
-	
+	public List<Book> getAllBooks();
+
 	public Book addBook(BookForm bookForm);
 	
 	public Page<Book> getBooks(Pageable pageable);

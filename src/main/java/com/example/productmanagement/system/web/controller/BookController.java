@@ -57,6 +57,8 @@ public class BookController {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
+
+
 	// READ
 	@GetMapping("/list")
 		public String listProducts(@RequestParam(value = "page", defaultValue = "0") int page,
