@@ -11,10 +11,21 @@
     <a class="btn btn-primary mb-3" href="/book/add">Add Book</a>
 
     <h1>Book Pie Chart</h1>
-    <canvas id="bookChart"></canvas>
+    <div class="pie-chart-container">
+        <canvas id="bookChart"></canvas>
+    </div>
 </div>
 
 <script th:inline="javascript">
+
+    // Update chart to reflect new size
+    window.addEventListener('resize', function() {
+         var canvas = document.getElementById('bookChart');
+         canvas.width = canvas.parentElement.clientWidth; // Set width to container width
+         canvas.height = canvas.parentElement.clientHeight;
+         bookChart.update();
+    });
+
     var rawJson = /*[[${booksChart}]]*/ '[]';  // Raw JSON as a string
     var decodedJson = decodeURIComponent(rawJson.replace(/\+/g, ' '));
     var books = JSON.parse(decodedJson);
@@ -27,28 +38,64 @@
           var bookTitles = books.map(function(book) { return book.title; });
           var bookPrices = books.map(function(book) { return book.price; });
 
+          // Function to generate a random color
+          function getRandomColor() {
+              var letters = '0123456789ABCDEF';
+              var color = '#';
+              for (var i = 0; i < 6; i++) {
+                  color += letters[Math.floor(Math.random()*16)];
+              }
+              return color;
+          }
+
+          var randomColors = bookTitles.map(() => getRandomColor());
+
           // Create a bar chart using Chart.js
-          var ctx = document.getElementById('bookChart').getContext('2d');
+         // var ctx = document.getElementById('bookChart').getContext('2d');
+
+          // Initial size adjustment
+          var canvas = document.getElementById('bookChart');
+          canvas.width = canvas.parentElement.clientWidth;
+          canvas.height = canvas.parentElement.clientHeight;
+
+          var ctx = canvas.getContext('2d')
           var bookChart = new Chart(ctx, {
-              type: 'bar',
+              type: 'pie',
               data: {
                   labels: bookTitles,
                   datasets: [{
                       label: 'Book Prices',
                       data: bookPrices,
-                      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                      backgroundColor: randomColors,
+                      //backgroundColor: 'rgba(54, 162, 235, 0.2)',
                       borderColor: 'rgba(54, 162, 235, 1)',
                       borderWidth: 1
                   }]
               },
               options: {
                 responsive: true,
-                //maintainAspectRatio: false,
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
+                maintainAspectRatio: false,
+                plugins: {
+                   legend: {
+                       display: true,
+                       position: 'left', // Display Chart label with each color
+                       labels: {
+                           boxWidth: 20,
+                           padding: 15
+                       }
+                   },
+                   title: {
+                         display: true,
+                         text: 'Book Prices Distribution'
+                   },
+                   tooltip: {
+                       callbacks: {
+                           label: function(tooltipItem) {
+                               return tooltipItem.label + ':$' + tooltipItem.raw;
+                           }
+                       }
+                   }
+                }
               }
           });
       } else {

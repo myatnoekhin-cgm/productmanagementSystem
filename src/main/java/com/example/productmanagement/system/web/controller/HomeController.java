@@ -33,14 +33,7 @@ public class HomeController {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-
 		model.addObject("pageTitle", "Home | BookStore");
 		return model;
 	}
-//	@GetMapping("/booksChart")
-//	public String getBookList(Model model) {
-//		List<Book> bookList = this.bookService.getAllBooks();
-//		model.addAttribute("booksChart", bookList);
-//		return "home";
-//	}
 }
